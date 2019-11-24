@@ -18,19 +18,28 @@ IF (CURL_FOUND)
     return()
 ENDIF ()
 
+find_path(curl_DEV_DIR
+	NAMES include/curl/curl.h
+	PATHS 
+		${PROJECT_SOURCE_DIR}/../dev
+		ENV DEVELOP_DIR
+	)
+	
+message(STATUS ${curl_DEV_DIR})
+
 IF(CMAKE_HOST_WIN32)
-  if (NOT EXISTS ${PROJECT_SOURCE_DIR}/buildwin/libcurl.lib)
+  if (NOT EXISTS ${curl_DEV_DIR}/lib/libcurl.lib)
       message(FATAL_ERROR "Cannot find bundled windows files.")
   endif ()
   ADD_LIBRARY(WIN32_LIBCURL SHARED IMPORTED)
   SET_TARGET_PROPERTIES(WIN32_LIBCURL PROPERTIES
-      IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/buildwin/libcurl.lib
-      IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/buildwin/libcurl.dll
+      IMPORTED_IMPLIB ${curl_DEV_DIR}/lib/libcurl.lib
+      IMPORTED_LOCATION ${curl_DEV_DIR}/lib/libcurl.dll
   )
   ADD_LIBRARY(WIN32_ZLIB1 SHARED IMPORTED)
   SET_TARGET_PROPERTIES(WIN32_ZLIB1 PROPERTIES
-      IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/buildwin/zlib1.lib
-      IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/buildwin/zlib1.dll
+      IMPORTED_IMPLIB ${curl_DEV_DIR}/lib/zlib1.lib
+      IMPORTED_LOCATION ${curl_DEV_DIR}/lib/zlib1.dll
   )
   IF(MSVC)
     INSTALL(FILES "buildwin/libcurl.dll" DESTINATION ".")
